@@ -1,0 +1,103 @@
+#include<bits/stdc++.h>
+#include<GL/glut.h>
+using namespace std;
+
+float v[3][3]={{100,200,300},{100,300,100},{1,1,1}};
+
+float t;
+float res[3][3],rot[3][3];
+
+void multiply()
+{
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            for(int k=0;k<3;k++)
+            {
+                res[i][j]+=rot[i][k]*v[k][j];
+            }
+        }
+    }
+}
+
+void rotri(float h,float k)
+{
+    rot[0][0]=cos(t);
+    rot[0][1]=-sin(t);
+    rot[0][2]=h*(1-cos(t))+k*sin(t);
+
+     rot[1][0]=sin(t);
+    rot[1][1]=cos(t);
+    rot[1][2]=k*(1-cos(t))-h*sin(t);
+
+     rot[2][0]=0;
+    rot[2][1]=1;
+    rot[2][2]=1;
+
+    multiply();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+     glColor3f(0,1,0);
+     glBegin(GL_TRIANGLES);
+    glVertex2f(v[0][0],v[1][0]);
+     glVertex2f(v[0][1],v[1][1]);
+     glVertex2f(v[0][2],v[1][2]);
+     glEnd();
+
+     rotri(0,0);
+      glColor3f(1,1,0);
+   glBegin(GL_TRIANGLES);
+    glVertex2f(res[0][0],res[1][0]);
+     glVertex2f(res[0][1],res[1][1]);
+     glVertex2f(res[0][2],res[1][2]);
+     glEnd();
+
+
+     rotri(200,300);
+      glColor3f(0,1,1);
+     glBegin(GL_TRIANGLES);
+    glVertex2f(res[0][0],res[1][0]);
+     glVertex2f(res[0][1],res[1][1]);
+     glVertex2f(res[0][2],res[1][2]);
+     glEnd();
+
+
+     glPointSize(3.0);
+     glColor3f(0,0,0);
+     glBegin(GL_POINTS);
+     glVertex2f(0,0);
+     glEnd();
+     glFlush();
+
+
+
+
+}
+
+void myinit()
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-500,500,-500,500);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+
+int main(int argc,char**argv)
+{
+     cin>>t;
+     t*=(3.1415/180.0);
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500,500);
+
+    glutCreateWindow("rotation and tranlation");
+    myinit();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
