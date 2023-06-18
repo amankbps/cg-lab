@@ -1,0 +1,101 @@
+//cube rotation
+#include<bits/stdc++.h>
+#include<GL/glut.h>
+using namespace std;
+
+
+
+float v[8][3]={{-1,-1,-1},{-1,1,-1},{1,1,-1},{1,-1,-1},{-1,-1,1},{-1,1,1},{1,1,1},{1,-1,1}};
+
+float t[3]={0,0,0};
+int axis=0;
+
+void polygon(int a,int b,int c,int d)
+{
+    glBegin(GL_POLYGON);
+     glVertex3fv(v[a]);
+      glVertex3fv(v[b]);
+      glVertex3fv(v[c]);
+      glVertex3fv(v[d]);
+      glEnd();
+
+}
+
+void cube()
+{
+    glColor3f(1,0,0);
+     polygon(0,1,2,3);
+
+     glColor3f(0,1,0);
+     polygon(1,5,6,2);
+
+      glColor3f(0,0,1);
+     polygon(4,5,6,7);
+
+      glColor3f(1,1,0);
+     polygon(0,4,7,3);
+
+      glColor3f(0,1,1);
+     polygon(2,3,7,6);
+
+      glColor3f(1,0,1);
+     polygon(0,1,5,4);
+
+
+}
+
+
+void display()
+{
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+     glLoadIdentity();
+     glRotatef(t[0],1,0,0);
+     glRotatef(t[0],0,1,0);
+     glRotatef(t[0],0,0,1);
+    cube();
+    glutSwapBuffers();
+    glFlush();
+
+}
+
+void spin()
+{
+    t[axis]+=0.05;
+    if(t[axis]>360)
+        t[axis]=0;
+    display();
+}
+
+void click(int btn,int s,int x,int v)
+{
+    if(btn==GLUT_LEFT_BUTTON && s==GLUT_DOWN)
+        axis=0;
+      if(btn==GLUT_RIGHT_BUTTON && s==GLUT_DOWN)
+        axis=1;
+      if(btn==GLUT_MIDDLE_BUTTON && s==GLUT_DOWN)
+        axis=2;
+}
+
+void myinit()
+{
+    glMatrixMode(GL_PROJECTION);
+
+    glOrtho(-2,2,-2,2,-2,2);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+int main(int argc,char**argv)
+{
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_SINGLE |GLUT_RGB |GLUT_DEPTH);
+    glutInitWindowSize(500,500);
+    glutCreateWindow("cube rotation");
+    myinit();
+    glutDisplayFunc(display);
+    glutIdleFunc(spin);
+    glutMouseFunc(click);
+    glEnable(GL_DEPTH_TEST);
+    glutMainLoop();
+    return 0;
+}
