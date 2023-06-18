@@ -1,4 +1,4 @@
-//bresen line drawing algo
+//bresen line drawing algo prg1
 #include<bits/stdc++.h>
 #include<GL/glut.h>
 using namespace std;
