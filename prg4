@@ -1,0 +1,111 @@
+//prg4 scanline algorithm
+#include <iostream>
+#include <GL/glut.h>
+#include <limits>
+using namespace std;
+
+class point {
+public:
+    int x, y;
+};
+
+bool ok;
+
+point p1 = { 100, 200 };
+point p2 = { 200, 300 };
+point p3 = { 300, 200 };
+point p4 = { 200, 100 };
+
+void edgetest(point a, point b, float le[], float re[])
+{
+    if (a.y > b.y)
+        swap(a, b);
+
+    float dx = b.x - a.x, dy = b.y - a.y;
+    float m;
+    if (dy != 0)
+        m = dx / dy;
+    else
+        m = dx;
+    float x = a.x;
+    for (int i = a.y; i <= b.y; i++) {
+        if (le[i] > x)
+            le[i] = x;
+        if (re[i] < x)
+            re[i] = x;
+        x += m;
+    }
+}
+
+void scanfill(point p1, point p2, point p3, point p4)
+{
+    float le[500], re[500];
+
+    for (int i = 0; i < 500; i++)
+        le[i] = numeric_limits<float>::infinity(), re[i] = -numeric_limits<float>::infinity();
+
+    edgetest(p1, p2, le, re);
+    edgetest(p2, p3, le, re);
+    edgetest(p3, p4, le, re);
+    edgetest(p4, p1, le, re);
+
+    glColor3f(1, 1, 0);
+    glBegin(GL_POINTS);
+
+    for (int i = 0; i < 500; i++) {
+        if (le[i] <= re[i]) {
+            for (int j = le[i]; j <= re[i]; j++)
+                glVertex2f(j, i);
+        }
+    }
+
+    glEnd();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    if (ok)
+        scanfill(p1, p2, p3, p4);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(p1.x, p1.y);
+    glVertex2f(p2.x, p2.y);
+    glVertex2f(p3.x, p3.y);
+    glVertex2f(p4.x, p4.y);
+    glEnd();
+    glFlush();
+}
+
+void myinit()
+{
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0, 499, 0, 499);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void menu(int id)
+{
+    if (id == 1)
+        ok = !ok;
+    else
+        ok = !ok;
+
+    glutPostRedisplay();
+}
+
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("scanfill");
+
+    glutCreateMenu(menu);
+    glutAddMenuEntry("fill", 1);
+    glutAddMenuEntry("clear", 0);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+    myinit();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
